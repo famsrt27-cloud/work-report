@@ -11,3 +11,5 @@ out/
 coverage/
 .npm-cache/
 supabase/.temp/
+
+.vercel

@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
+import { internalEmailForUsername } from "../src/lib/auth/internal-identifier.ts";
 
 const required = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "SUPABASE_SERVICE_ROLE_KEY",
-  "AUTH_INTERNAL_EMAIL_DOMAIN",
   "BOOTSTRAP_ADMIN_USERNAME",
   "BOOTSTRAP_ADMIN_FULL_NAME",
   "BOOTSTRAP_ADMIN_PASSWORD",
@@ -18,12 +18,11 @@ if (password.length < 16 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) |
 }
 if (password === username) throw new Error("Admin password must never match the username.");
 
-const domain = process.env.AUTH_INTERNAL_EMAIL_DOMAIN.toLowerCase();
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 const { data, error } = await supabase.auth.admin.createUser({
-  email: `${username}@${domain}`,
+  email: internalEmailForUsername(username),
   password,
   email_confirm: true,
   app_metadata: { account_type: "work_reporting", bootstrap_admin: true },

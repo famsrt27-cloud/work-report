@@ -10,8 +10,7 @@ test("username preserves a leading zero and requires exactly seven digits", () =
 });
 
 test("internal email is derived only after username validation", () => {
-  process.env.AUTH_INTERNAL_EMAIL_DOMAIN = "login.example.go.th";
-  assert.equal(internalEmailForUsername("0123456"), "0123456@login.example.go.th");
+  assert.equal(internalEmailForUsername("0123456"), "0123456@work-report.invalid");
   assert.throws(() => internalEmailForUsername("admin"));
 });
 

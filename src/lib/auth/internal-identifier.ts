@@ -2,11 +2,11 @@ import { z } from "zod";
 
 export const usernameSchema = z.string().regex(/^\d{7}$/, "กรุณากรอกเลขประจำตัว 7 หลัก");
 
+// Supabase password auth requires an email or phone identifier. Keep that
+// implementation detail internal so users sign in with their 7-digit number only.
+const INTERNAL_AUTH_EMAIL_DOMAIN = "work-report.invalid";
+
 export function internalEmailForUsername(username: string) {
   const normalized = usernameSchema.parse(username);
-  const domain = process.env.AUTH_INTERNAL_EMAIL_DOMAIN?.trim().toLowerCase();
-  if (!domain || !/^(?=.{3,253}$)[a-z0-9.-]+\.[a-z]{2,63}$/.test(domain)) {
-    throw new Error("AUTH_INTERNAL_EMAIL_DOMAIN is not configured with a valid controlled domain.");
-  }
-  return `${normalized}@${domain}`;
+  return `${normalized}@${INTERNAL_AUTH_EMAIL_DOMAIN}`;
 }
