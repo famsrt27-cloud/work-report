@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function SingleReportsPage() { return <main className="content"><div className="page-heading"><div><h1>รายงานรายเรื่อง</h1><p>เลือกรายการงานก่อนสร้างรายงาน พร้อมหลักฐานและหนังสือต้นเรื่องที่มีสิทธิ์</p></div></div><div className="panel empty"><strong>เริ่มจากรายการงาน</strong><Link className="button button-primary" href="/tasks" style={{ marginTop: 14 }}>เลือกรายการงาน</Link></div></main>; }
