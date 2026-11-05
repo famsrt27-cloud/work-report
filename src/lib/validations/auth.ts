@@ -26,3 +26,19 @@ export const createUserSchema = z.object({
   departmentId: z.string().uuid().nullable().optional(),
   role: z.enum(["staff", "supervisor", "manager", "admin"]),
 });
+
+const departmentNameSchema = z.string()
+  .trim()
+  .min(1, "กรุณาระบุชื่อฝ่าย")
+  .max(120, "ชื่อฝ่ายต้องไม่เกิน 120 ตัวอักษร");
+
+export const createDepartmentSchema = z.object({
+  name: departmentNameSchema,
+});
+
+export const updateDepartmentSchema = z.object({
+  name: departmentNameSchema.optional(),
+  active: z.boolean().optional(),
+}).refine((value) => value.name !== undefined || value.active !== undefined, {
+  message: "ไม่มีข้อมูลที่ต้องแก้ไข",
+});

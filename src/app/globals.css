@@ -19,7 +19,7 @@
 
 * { box-sizing: border-box; }
 html { background: var(--paper); color: var(--ink-950); }
-body { margin: 0; font-family: Tahoma, "Leelawadee UI", "Noto Sans Thai", sans-serif; background: var(--paper); }
+body { margin: 0; font-family: var(--font-noto-sans-thai), Tahoma, sans-serif; background: var(--paper); }
 button, input, textarea, select { font: inherit; }
 a { color: inherit; text-decoration: none; }
 button, a { -webkit-tap-highlight-color: transparent; }
@@ -59,6 +59,33 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .form-error, .form-success { padding: 11px 13px; margin: 0 0 16px; border-radius: 9px; font-size: 14px; line-height: 1.5; }
 .form-error { background: var(--red-soft); color: #862f2f; }
 .form-success { background: var(--green-soft); color: #145d43; }
+
+.settings-admin-grid { display: grid; grid-template-columns: minmax(320px, .82fr) minmax(520px, 1.18fr); gap: 18px; align-items: start; }
+.settings-admin-grid .form-card { max-width: none; }
+.department-panel { min-width: 0; }
+.department-panel .panel-head { align-items: flex-start; }
+.department-panel .panel-head p { margin: 5px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.department-summary { flex: 0 0 auto; min-width: 66px; padding: 8px 11px; border-radius: 10px; background: var(--ink-100); color: var(--ink-800); text-align: center; }
+.department-summary strong { display: block; font-size: 21px; line-height: 1; }
+.department-summary span { display: block; margin-top: 4px; font-size: 11px; }
+.department-create { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: #fbfdfe; }
+.department-create .filter-control { min-height: 42px; }
+.department-list { display: grid; }
+.department-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 15px 20px; border-bottom: 1px solid #edf1f4; }
+.department-row:last-child { border-bottom: 0; }
+.department-row.is-inactive { background: #f8fafb; }
+.department-main { min-width: 0; }
+.department-main strong { display: block; overflow-wrap: anywhere; }
+.department-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 5px; color: var(--muted); font-size: 12px; }
+.department-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
+.department-edit { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
+.department-edit .filter-control { min-height: 40px; }
+.button-compact { min-height: 36px; padding: 6px 10px; border-radius: 8px; font-size: 12px; }
+.button-ghost { background: transparent; color: var(--ink-700); border-color: #ccd8e2; }
+.status-active { color: var(--green); background: var(--green-soft); }
+.status-inactive { color: #6e7781; background: #eef1f3; }
+.management-feedback { margin: 14px 20px 0; }
+.account-panel { margin-top: 18px; }
 
 .app-shell { min-height: 100vh; display: grid; grid-template-columns: 250px minmax(0, 1fr); }
 .sidebar { position: sticky; top: 0; height: 100vh; padding: 24px 16px; background: var(--ink-950); color: white; display: flex; flex-direction: column; }
@@ -165,6 +192,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .action-strip > div:nth-child(4) { border-top: 1px solid rgba(255,255,255,.12); }
   .metric-grid { grid-template-columns: repeat(2, 1fr); }
   .section-grid { grid-template-columns: 1fr; }
+  .settings-admin-grid { grid-template-columns: 1fr; }
   .task-row { grid-template-columns: 110px minmax(0, 1fr) 130px 30px; }
   .task-row .task-meta:nth-of-type(2) { display: none; }
 }
@@ -199,6 +227,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .span-2 { grid-column: auto; }
   .filters { grid-template-columns: 1fr; }
   .bar-row { grid-template-columns: 95px 1fr 24px; }
+  .department-row { grid-template-columns: 1fr; }
+  .department-actions { justify-content: flex-start; }
+  .department-edit { grid-template-columns: 1fr 1fr; }
+  .department-edit .filter-control { grid-column: 1 / -1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
