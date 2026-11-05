@@ -27,6 +27,16 @@ export const createUserSchema = z.object({
   role: z.enum(["staff", "supervisor", "manager", "admin"]),
 });
 
+export const updateUserSchema = z.object({
+  fullName: z.string().trim().min(1, "กรุณาระบุชื่อ-นามสกุล").max(200).optional(),
+  position: z.string().trim().max(200).optional(),
+  departmentId: z.string().uuid().nullable().optional(),
+  role: z.enum(["staff", "supervisor", "manager"]).optional(),
+  isActive: z.boolean().optional(),
+}).strict().refine((value) => Object.keys(value).length > 0, {
+  message: "ไม่มีข้อมูลที่ต้องแก้ไข",
+});
+
 const departmentNameSchema = z.string()
   .trim()
   .min(1, "กรุณาระบุชื่อฝ่าย")
