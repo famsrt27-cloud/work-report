@@ -17,6 +17,14 @@ export const taskSchema = z.object({
   referenceNo: optionalText(200),
   referenceDate: optionalDate,
   sourceNote: optionalText(2000),
+}).superRefine((task, context) => {
+  if (task.receivedDate && task.dueDate && task.dueDate < task.receivedDate) {
+    context.addIssue({
+      code: "custom",
+      path: ["dueDate"],
+      message: "กำหนดส่งต้องไม่ก่อนวันที่รับงาน",
+    });
+  }
 });
 
 export const workLogSchema = z.object({

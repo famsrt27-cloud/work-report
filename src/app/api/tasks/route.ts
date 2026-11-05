@@ -2,6 +2,31 @@ import { NextResponse } from "next/server";
 import { getApiViewer } from "@/lib/auth/api";
 import { taskSchema } from "@/lib/validations/tasks";
 
+type DatabaseError = {
+  code?: string;
+  message?: string;
+  details?: string;
+  hint?: string;
+};
+
+function logDatabaseError(operation: string, error: DatabaseError) {
+  console.error(`[tasks:${operation}] database error`, {
+    code: error.code,
+    message: error.message,
+    details: error.details,
+    hint: error.hint,
+  });
+}
+
+function taskInsertErrorMessage(error: DatabaseError) {
+  if (error.code === "23514" && error.message?.includes("tasks_due_after_received")) {
+    return "กำหนดส่งต้องไม่ก่อนวันที่รับงาน";
+  }
+  if (error.code === "23503") return "ประเภทงานหรือข้อมูลผู้ใช้งานไม่ถูกต้อง กรุณาโหลดหน้าใหม่แล้วลองอีกครั้ง";
+  if (error.code === "42501") return "บัญชีนี้ไม่มีสิทธิ์สร้างรายการงาน กรุณาติดต่อผู้ดูแลระบบ";
+  return "สร้างรายการงานไม่สำเร็จ กรุณาลองอีกครั้ง";
+}
+
 export async function GET(request: Request) {
   const context = await getApiViewer();
   if (context.error) return NextResponse.json({ error: "ไม่มีสิทธิ์เข้าถึง" }, { status: 401 });
@@ -37,7 +62,14 @@ export async function POST(request: Request) {
     task_status: input.taskStatus,
     created_by: context.userId,
   }).select("id, task_code").single();
-  if (error || !task) return NextResponse.json({ error: "สร้างรายการงานไม่สำเร็จ" }, { status: 400 });
+  if (error) {
+    logDatabaseError("insert", error);
+    return NextResponse.json({ error: taskInsertErrorMessage(error) }, { status: 400 });
+  }
+  if (!task) {
+    console.error("[tasks:insert] database returned no task and no error");
+    return NextResponse.json({ error: "สร้างรายการงานไม่สำเร็จ กรุณาลองอีกครั้ง" }, { status: 500 });
+  }
 
   const hasSource = input.sourceType || input.originatingUnit || input.assignerName || input.assignerPosition
     || input.referenceNo || input.referenceDate || input.sourceNote;
@@ -52,7 +84,10 @@ export async function POST(request: Request) {
       reference_date: input.referenceDate || null,
       source_note: input.sourceNote || null,
     });
-    if (sourceError) return NextResponse.json({ error: "สร้างงานแล้ว แต่บันทึกที่มาของงานไม่สำเร็จ", task }, { status: 207 });
+    if (sourceError) {
+      logDatabaseError("insert-source", sourceError);
+      return NextResponse.json({ error: "สร้างงานแล้ว แต่บันทึกที่มาของงานไม่สำเร็จ", task }, { status: 207 });
+    }
   }
   return NextResponse.json({ task }, { status: 201 });
 }
