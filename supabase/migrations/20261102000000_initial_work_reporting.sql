@@ -95,6 +95,7 @@ create table public.tasks (
 );
 create index tasks_owner_updated_idx on public.tasks(owner_user_id, updated_at desc);
 create index tasks_category_id_idx on public.tasks(category_id);
+create index tasks_created_by_idx on public.tasks(created_by);
 create index tasks_due_active_idx on public.tasks(due_date, owner_user_id)
   where due_date is not null and task_status = 'in_progress';
 
@@ -197,6 +198,7 @@ create table public.task_status_history (
   constraint task_status_history_valid_new check (new_status in ('in_progress', 'completed', 'cancelled'))
 );
 create index task_status_history_task_changed_idx on public.task_status_history(task_id, changed_at desc, id);
+create index task_status_history_changed_by_idx on public.task_status_history(changed_by);
 
 create table public.reviews (
   id uuid primary key default gen_random_uuid(),
@@ -230,6 +232,7 @@ create table public.report_snapshots (
   constraint report_snapshots_valid_review_status check (review_status in ('draft', 'pending', 'approved', 'returned'))
 );
 create index report_snapshots_subject_period_idx on public.report_snapshots(subject_user_id, period_start desc, period_end);
+create index report_snapshots_created_by_idx on public.report_snapshots(created_by);
 
 create table public.notifications (
   id bigint generated always as identity primary key,
@@ -528,7 +531,7 @@ using (recipient_user_id = (select auth.uid()) and (select private.current_profi
 with check (recipient_user_id = (select auth.uid()) and (select private.current_profile_ready()));
 
 revoke all on all tables in schema public from anon, authenticated;
-grant usage on schema public to authenticated;
+grant usage on schema public to authenticated, service_role;
 grant select on public.departments, public.profiles, public.user_roles, public.task_categories,
   public.tasks, public.task_collaborators, public.task_sources, public.source_documents,
   public.work_logs, public.evidence_images, public.task_status_history, public.reviews,
@@ -536,6 +539,10 @@ grant select on public.departments, public.profiles, public.user_roles, public.t
 grant insert, update on public.tasks, public.task_collaborators, public.task_sources, public.work_logs to authenticated;
 grant update(read_at) on public.notifications to authenticated;
 grant update(caption, evidence_type, display_order, include_in_pdf) on public.evidence_images to authenticated;
+-- New Supabase projects no longer auto-grant Data API access. The server-only
+-- service role needs explicit privileges in addition to BYPASSRLS.
+grant select, insert, update, delete on all tables in schema public to service_role;
+grant usage, select on all sequences in schema public to service_role;
 -- Storage remains private and deny-by-default for browser clients. Uploads and
 -- short-lived signed URLs are issued by authenticated Next.js route handlers.
 -- Never manipulate storage.objects rows directly; use the Storage API.
