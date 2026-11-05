@@ -50,8 +50,10 @@ export async function POST(request: Request) {
   const parsed = taskSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "ข้อมูลไม่ถูกต้อง" }, { status: 400 });
   const input = parsed.data;
+  const task = { id: crypto.randomUUID() };
 
-  const { data: task, error } = await context.supabase.from("tasks").insert({
+  const { error } = await context.supabase.from("tasks").insert({
+    id: task.id,
     task_code: "",
     title: input.title,
     description: input.description || null,
@@ -61,14 +63,10 @@ export async function POST(request: Request) {
     due_date: input.dueDate || null,
     task_status: input.taskStatus,
     created_by: context.userId,
-  }).select("id, task_code").single();
+  });
   if (error) {
     logDatabaseError("insert", error);
     return NextResponse.json({ error: taskInsertErrorMessage(error) }, { status: 400 });
-  }
-  if (!task) {
-    console.error("[tasks:insert] database returned no task and no error");
-    return NextResponse.json({ error: "สร้างรายการงานไม่สำเร็จ กรุณาลองอีกครั้ง" }, { status: 500 });
   }
 
   const hasSource = input.sourceType || input.originatingUnit || input.assignerName || input.assignerPosition
