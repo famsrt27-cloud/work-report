@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getApiViewer } from "@/lib/auth/api";
 import { createAdminSupabaseClient } from "@/lib/supabase/admin";
+import { ensureStorageBucket } from "@/lib/storage/buckets";
 import { inspectUpload, safeOriginalName } from "@/lib/storage/files";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -18,6 +19,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const admin = createAdminSupabaseClient();
   const created: Array<{ id: string; original_name: string }> = [];
   try {
+    await ensureStorageBucket(admin, "work-source-docs");
     for (const file of files) {
       const inspected = await inspectUpload(file, "pdf");
       const storageKey = `${taskId}/${inspected.objectName}`;
