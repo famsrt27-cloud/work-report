@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SearchableSelect } from "@/components/forms/searchable-select";
 import type { AppRole } from "@/types";
 
 interface DepartmentOption {
@@ -127,7 +128,7 @@ export function UserManager({
       <div className="form-grid">
         <div className="field"><label htmlFor="editFullName">ชื่อ-นามสกุล *</label><input id="editFullName" value={editing.fullName} onChange={(event) => setEditing({ ...editing, fullName: event.target.value })} required maxLength={200} /></div>
         <div className="field"><label htmlFor="editPosition">ตำแหน่ง</label><input id="editPosition" value={editing.position ?? ""} onChange={(event) => setEditing({ ...editing, position: event.target.value })} maxLength={200} /></div>
-        <div className="field"><label htmlFor="editDepartment">ฝ่าย/หน่วยงาน</label><select id="editDepartment" value={editing.departmentId ?? ""} disabled={editing.role === "admin"} onChange={(event) => setEditing({ ...editing, departmentId: event.target.value || null })}><option value="">ไม่ระบุ</option>{departments.map((department) => <option value={department.id} key={department.id} disabled={!department.active && department.id !== editing.departmentId}>{department.name}{department.active ? "" : " (ปิดใช้งาน)"}</option>)}</select></div>
+        <div className="field"><label htmlFor="editDepartment">ฝ่าย/หน่วยงาน</label><SearchableSelect id="editDepartment" value={editing.departmentId ?? ""} disabled={editing.role === "admin"} onChange={(value) => setEditing({ ...editing, departmentId: value || null })} placeholder="ค้นหาฝ่าย/หน่วยงาน" options={[{ value: "", label: "ไม่ระบุ" }, ...departments.map((department) => ({ value: department.id, label: `${department.name}${department.active ? "" : " (ปิดใช้งาน)"}`, disabled: !department.active && department.id !== editing.departmentId }))]} /></div>
         <div className="field"><label htmlFor="editRole">บทบาท</label><select id="editRole" value={editing.role} disabled={editing.role === "admin"} onChange={(event) => setEditing({ ...editing, role: event.target.value as AppRole })}><option value="staff">เจ้าหน้าที่</option><option value="supervisor">หัวหน้างาน</option><option value="manager">ผู้บริหาร</option>{editing.role === "admin" ? <option value="admin">ผู้ดูแลระบบ</option> : null}</select></div>
       </div>
       <div className="form-actions"><button type="button" className="button button-secondary" onClick={() => setEditing(null)}>ยกเลิก</button><button className="button button-primary" disabled={pendingId === editing.id}>{pendingId === editing.id ? "กำลังบันทึก…" : "บันทึกการแก้ไข"}</button></div>

@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SearchableSelect } from "@/components/forms/searchable-select";
 
 interface Department { id: string; name: string }
 
 export function UserForm({ departments }: { departments: Department[] }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
+  const [departmentId, setDepartmentId] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<{ username: string; message: string; temporaryPassword?: string } | null>(null);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -18,7 +20,7 @@ export function UserForm({ departments }: { departments: Department[] }) {
     const data = await response.json();
     if (!response.ok) { setError(data.error ?? "สร้างบัญชีไม่สำเร็จ"); setPending(false); return; }
     setResult({ username: data.user.username, message: data.initialCredential.message ?? "รหัสผ่านชั่วคราวแสดงครั้งเดียว", temporaryPassword: data.initialCredential.temporaryPassword });
-    event.currentTarget.reset(); setPending(false); router.refresh();
+    event.currentTarget.reset(); setDepartmentId(""); setPending(false); router.refresh();
   }
   return <form className="form-card" onSubmit={submit}>
     {error ? <div className="form-error" role="alert">{error}</div> : null}
@@ -27,7 +29,7 @@ export function UserForm({ departments }: { departments: Department[] }) {
       <div className="field"><label htmlFor="username">เลขประจำตัวเจ้าหน้าที่ *</label><input id="username" name="username" type="text" inputMode="numeric" pattern="[0-9]{7}" maxLength={7} required /></div>
       <div className="field"><label htmlFor="fullName">ชื่อ-นามสกุล *</label><input id="fullName" name="fullName" required /></div>
       <div className="field"><label htmlFor="position">ตำแหน่ง</label><input id="position" name="position" /></div>
-      <div className="field"><label htmlFor="departmentId">ฝ่าย/หน่วยงาน</label><select id="departmentId" name="departmentId"><option value="">ไม่ระบุ</option>{departments.map((item) => <option value={item.id} key={item.id}>{item.name}</option>)}</select></div>
+      <div className="field"><label htmlFor="departmentId">ฝ่าย/หน่วยงาน</label><SearchableSelect id="departmentId" name="departmentId" value={departmentId} onChange={setDepartmentId} placeholder="ค้นหาฝ่าย/หน่วยงาน" options={[{ value: "", label: "ไม่ระบุ" }, ...departments.map((item) => ({ value: item.id, label: item.name }))]} /></div>
       <div className="field"><label htmlFor="role">บทบาท</label><select id="role" name="role" defaultValue="staff"><option value="staff">เจ้าหน้าที่</option><option value="supervisor">หัวหน้างาน</option><option value="manager">ผู้บริหาร</option></select></div>
     </div></section>
     <div className="notice" style={{ marginBottom: 20 }}>บัญชี Staff ใช้รหัสผ่านเริ่มต้นตรงกับเลขประจำตัวและถูกบังคับเปลี่ยนทันที บัญชีสิทธิ์สูงจะได้รับรหัสผ่านสุ่มแบบแสดงครั้งเดียว ส่วน Admin ต้องสร้างผ่านกระบวนการสิทธิ์สูงแยกต่างหาก</div>

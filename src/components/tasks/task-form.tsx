@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SearchableSelect } from "@/components/forms/searchable-select";
 
 interface Category { id: string; name: string }
+interface Department { id: string; name: string }
 
-export function TaskForm({ categories }: { categories: Category[] }) {
+export function TaskForm({ categories, departments }: { categories: Category[]; departments: Department[] }) {
   const router = useRouter();
   const [sourceType, setSourceType] = useState("");
   const [receivedDate, setReceivedDate] = useState("");
+  const [originatingUnit, setOriginatingUnit] = useState("");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -46,7 +49,7 @@ export function TaskForm({ categories }: { categories: Category[] }) {
     </div></section>
     <section className="form-section"><h2>ที่มาของงาน</h2><p>ทุกช่องในส่วนนี้ไม่บังคับ</p><div className="form-grid">
       <div className="field"><label htmlFor="sourceType">ที่มาของงาน</label><select id="sourceType" name="sourceType" value={sourceType} onChange={(event) => setSourceType(event.target.value)}><option value="">ไม่ระบุ</option><option value="document">หนังสือจากต้นเรื่อง</option><option value="person">บุคคลมอบหมาย</option><option value="routine">งานประจำ</option><option value="other">อื่น ๆ</option></select></div>
-      <div className="field"><label htmlFor="originatingUnit">หน่วยงานต้นเรื่อง</label><input id="originatingUnit" name="originatingUnit" /></div>
+      <div className="field"><label htmlFor="originatingUnit">หน่วยงานต้นเรื่อง</label><SearchableSelect id="originatingUnit" name="originatingUnit" value={originatingUnit} onChange={setOriginatingUnit} placeholder="ค้นหาฝ่าย/หน่วยงาน" options={[{ value: "", label: "ไม่ระบุ" }, ...departments.map((department) => ({ value: department.name, label: department.name }))]} /></div>
       <div className="field" hidden={sourceType === "routine"}><label htmlFor="assignerName">ผู้มอบหมายงาน</label><input id="assignerName" name="assignerName" /></div><div className="field" hidden={sourceType === "routine"}><label htmlFor="assignerPosition">ตำแหน่งผู้มอบหมาย</label><input id="assignerPosition" name="assignerPosition" /></div>
       <div className="field" hidden={!showDocument}><label htmlFor="referenceNo">เลขที่หนังสือ / คำสั่ง</label><input id="referenceNo" name="referenceNo" /></div><div className="field" hidden={!showDocument}><label htmlFor="referenceDate">วันที่หนังสือ</label><input id="referenceDate" name="referenceDate" type="date" /></div>
       <div className="field span-2"><label htmlFor="sourceNote">หมายเหตุ</label><textarea id="sourceNote" name="sourceNote" /></div>
