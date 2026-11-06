@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getApiViewer } from "@/lib/auth/api";
+import { INDIVIDUAL_DASHBOARD_ROLES } from "@/lib/auth/roles";
 
 const querySchema = z.object({
   userId: z.string().uuid(),
@@ -8,8 +9,13 @@ const querySchema = z.object({
 });
 
 export async function GET(request: Request) {
-  const context = await getApiViewer();
-  if (context.error) return NextResponse.json({ error: "ไม่มีสิทธิ์เข้าถึง" }, { status: 401 });
+  const context = await getApiViewer({ roles: INDIVIDUAL_DASHBOARD_ROLES });
+  if (context.error) {
+    return NextResponse.json(
+      { error: "ไม่มีสิทธิ์เข้าถึง Dashboard รายบุคคล" },
+      { status: context.error === "unauthorized" ? 401 : 403 },
+    );
+  }
   const url = new URL(request.url);
   const parsed = querySchema.safeParse({ userId: url.searchParams.get("user_id"), month: url.searchParams.get("month") });
   if (!parsed.success) return NextResponse.json({ error: "ตัวกรองไม่ถูกต้อง" }, { status: 400 });

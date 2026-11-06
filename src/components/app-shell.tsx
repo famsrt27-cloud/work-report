@@ -1,15 +1,17 @@
 import Link from "next/link";
+import { canAccessIndividualDashboard } from "@/lib/auth/roles";
 import type { ViewerProfile } from "@/types";
 
 export function AppShell({ viewer, children }: { viewer: ViewerProfile; children: React.ReactNode }) {
   const isAdmin = viewer.roles.includes("admin");
+  const canViewIndividualDashboard = canAccessIndividualDashboard(viewer.roles);
   return <div className="app-shell">
     <aside className="sidebar">
       <Link href="/dashboard" className="sidebar-brand"><div className="brand-mark">รง</div><div className="brand-copy"><strong>Work Report</strong><span>ระบบรายงานการปฏิบัติงาน</span></div></Link>
       <nav className="nav" aria-label="เมนูหลัก">
         <div className="nav-section">ภาพรวม</div>
         <Link href="/dashboard">Dashboard</Link>
-        <Link href="/dashboard/individual">Dashboard รายบุคคล</Link>
+        {canViewIndividualDashboard ? <Link href="/dashboard/individual">Dashboard รายบุคคล</Link> : null}
         <div className="nav-section">การปฏิบัติงาน</div>
         <Link href="/tasks">รายการงาน</Link>
         <Link href="/tasks/new">เพิ่มงานใหม่</Link>

@@ -77,6 +77,10 @@ export interface Database {
         id: number; actor_id: string | null; entity_type: string; entity_id: string | null;
         action: string; safe_diff_json: Json; created_at: string;
       }>;
+      file_cleanup_runs: Row<{
+        id: number; started_at: string; completed_at: string | null; processed: number;
+        deleted: number; failed: number; status: "running" | "completed" | "partial" | "failed";
+      }>;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

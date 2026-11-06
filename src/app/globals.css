@@ -86,6 +86,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .status-inactive { color: #6e7781; background: #eef1f3; }
 .management-feedback { margin: 14px 20px 0; }
 .account-panel { margin-top: 18px; }
+.storage-cleanup-panel { margin-top: 18px; }
+.storage-cleanup-panel .panel-head { align-items: flex-start; }
+.storage-cleanup-body { padding: 20px; }
+.storage-counts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.storage-counts span { min-width: 88px; padding: 8px 11px; border-radius: 10px; background: var(--ink-100); color: var(--ink-800); text-align: center; font-size: 11px; }
+.storage-counts strong { display: block; font-size: 20px; line-height: 1.1; }
+.storage-retention-note { margin-bottom: 16px; }
+.storage-cleanup-actions { display: flex; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
 .panel-description { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
 .account-count { color: var(--muted); font-size: 13px; white-space: nowrap; }
 .user-edit-panel { margin: 16px 20px 20px; padding: 18px; border: 1px solid #cbd8e2; border-radius: 12px; background: #f8fbfd; }
@@ -243,6 +251,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .department-edit .filter-control { grid-column: 1 / -1; }
   .user-edit-panel { margin: 12px; padding: 15px; }
   .user-actions { justify-content: flex-start; min-width: 220px; }
+  .storage-cleanup-panel .panel-head { display: grid; }
+  .storage-counts { justify-content: flex-start; }
+  .storage-cleanup-actions { justify-content: stretch; }
+  .storage-cleanup-actions .button { flex: 1 1 220px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

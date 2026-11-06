@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getApiViewer } from "@/lib/auth/api";
+import { INDIVIDUAL_DASHBOARD_ROLES } from "@/lib/auth/roles";
 import { generateMonthlyReport } from "@/lib/pdf/generate-monthly";
 
 export const runtime = "nodejs";
@@ -12,8 +13,13 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
-  const context = await getApiViewer();
-  if (context.error) return NextResponse.json({ error: "ไม่มีสิทธิ์เข้าถึง" }, { status: 401 });
+  const context = await getApiViewer({ roles: INDIVIDUAL_DASHBOARD_ROLES });
+  if (context.error) {
+    return NextResponse.json(
+      { error: "ไม่มีสิทธิ์สร้างรายงานประจำเดือนของผู้อื่น" },
+      { status: context.error === "unauthorized" ? 401 : 403 },
+    );
+  }
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "ตัวเลือกรายงานไม่ถูกต้อง" }, { status: 400 });
   const [year, monthNumber] = parsed.data.month.split("-").map(Number);

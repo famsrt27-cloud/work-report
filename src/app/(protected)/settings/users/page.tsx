@@ -1,8 +1,10 @@
 import { DepartmentManager } from "@/components/admin/department-manager";
+import { StorageCleanupPanel } from "@/components/admin/storage-cleanup-panel";
 import { UserForm } from "@/components/admin/user-form";
 import { UserManager } from "@/components/admin/user-manager";
 import { requireViewer } from "@/lib/auth/permissions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import type { AppRole } from "@/types";
 
 export const metadata = { title: "จัดการผู้ใช้งาน" };
@@ -10,11 +12,14 @@ export const metadata = { title: "จัดการผู้ใช้งาน"
 export default async function UsersSettingsPage() {
   const viewer = await requireViewer({ roles: ["admin"] });
   const supabase = await createServerSupabaseClient();
-  const [departmentResult, profilesResult, departmentUsageResult, rolesResult] = await Promise.all([
+  const admin = createAdminSupabaseClient();
+  const [departmentResult, profilesResult, departmentUsageResult, rolesResult, sourceCountResult, imageCountResult] = await Promise.all([
     supabase.from("departments").select("id, name, active").order("active", { ascending: false }).order("name"),
     supabase.from("profiles").select("user_id, username, full_name, position, department_id, is_active, must_change_password").order("full_name").limit(50),
     supabase.from("profiles").select("department_id").not("department_id", "is", null),
     supabase.from("user_roles").select("user_id, role"),
+    admin.from("source_documents").select("id", { count: "exact", head: true }),
+    admin.from("evidence_images").select("id", { count: "exact", head: true }),
   ]);
   const counts = new Map<string, number>();
   for (const profile of departmentUsageResult.data ?? []) {
@@ -45,5 +50,6 @@ export default async function UsersSettingsPage() {
   return <main className="content"><div className="page-heading"><div><h1>ผู้ใช้งานและฝ่าย</h1><p>จัดโครงสร้างฝ่ายและสร้างบัญชีเจ้าหน้าที่จากหน้าเดียว</p></div></div>
     <div className="settings-admin-grid"><DepartmentManager departments={departments} /><UserForm departments={departments.filter((department) => department.active)} /></div>
     <UserManager users={users} departments={departments} currentUserId={viewer.user_id} />
+    <StorageCleanupPanel documentCount={sourceCountResult.count ?? 0} imageCount={imageCountResult.count ?? 0} />
   </main>;
 }

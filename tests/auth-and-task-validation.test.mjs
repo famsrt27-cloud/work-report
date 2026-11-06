@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { internalEmailForUsername, usernameSchema } from "../src/lib/auth/internal-identifier.ts";
+import { canAccessIndividualDashboard } from "../src/lib/auth/roles.ts";
 import { durationBetween, taskSchema } from "../src/lib/validations/tasks.ts";
+
+test("individual dashboard is hidden from staff and available to elevated roles", () => {
+  assert.equal(canAccessIndividualDashboard(["staff"]), false);
+  assert.equal(canAccessIndividualDashboard(["supervisor"]), true);
+  assert.equal(canAccessIndividualDashboard(["manager"]), true);
+  assert.equal(canAccessIndividualDashboard(["admin"]), true);
+});
 
 test("username preserves a leading zero and requires exactly seven digits", () => {
   assert.equal(usernameSchema.parse("0123456"), "0123456");
