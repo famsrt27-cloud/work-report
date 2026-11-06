@@ -84,6 +84,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .department-summary span { display: block; margin-top: 4px; font-size: 11px; }
 .department-create { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: #fbfdfe; }
 .department-create .filter-control { min-height: 42px; }
+.department-list-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) 138px; gap: 8px; align-items: center; padding: 13px 20px; border-bottom: 1px solid var(--line); background: #f8fbfd; }
+.department-list-toolbar .filter-control { min-height: 40px; }
+.department-search { min-width: 0; }
+.department-result-count { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
 .department-list { display: grid; }
 .department-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 15px 20px; border-bottom: 1px solid #edf1f4; }
 .department-row:last-child { border-bottom: 0; }
@@ -94,6 +98,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .department-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
 .department-edit { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; }
 .department-edit .filter-control { min-height: 40px; }
+.department-filter-empty { gap: 5px; }
+.department-filter-empty span { color: var(--muted); }
+.department-filter-empty .text-button { min-height: 36px; margin-top: 4px; }
+.department-pagination { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; border-top: 1px solid var(--line); background: #fbfdfe; }
+.department-pagination span { color: var(--muted); font-size: 12px; white-space: nowrap; }
 .button-compact { min-height: 36px; padding: 6px 10px; border-radius: 8px; font-size: 12px; }
 .button-ghost { background: transparent; color: var(--ink-700); border-color: #ccd8e2; }
 .status-active { color: var(--green); background: var(--green-soft); }
@@ -260,6 +269,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .filters { grid-template-columns: 1fr; }
   .bar-row { grid-template-columns: 95px 1fr 24px; }
   .department-row { grid-template-columns: 1fr; }
+  .department-list-toolbar { grid-template-columns: 1fr; }
+  .department-result-count { grid-column: auto; }
   .department-actions { justify-content: flex-start; }
   .department-edit { grid-template-columns: 1fr 1fr; }
   .department-edit .filter-control { grid-column: 1 / -1; }
